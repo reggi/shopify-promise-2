@@ -4,14 +4,15 @@ import path from 'path'
 import url from 'url'
 import Promise from 'bluebird'
 import axios from 'axios'
-import { defaultsDeep,  difference, range, flatten } from 'lodash'
+import { defaultsDeep, difference, range, flatten } from 'lodash'
 
 let debug = Debug('shopify-promise-2')
 
 /** wraps promise and rate limits based on second and per second allowance */
 export function promiseDebounce (fn, delay, count) {
-  var working = 0, queue = []
-  function work() {
+  let working = 0
+  let queue = []
+  function work () {
     if ((queue.length === 0) || (working === count)) return
     working++
     Promise.delay(delay).tap(function () { working-- }).then(work)
@@ -20,7 +21,7 @@ export function promiseDebounce (fn, delay, count) {
   }
   return function debounced () {
     var args = arguments
-    return new Promise(function(resolve){
+    return new Promise(function (resolve) {
       queue.push([this, args, resolve])
       if (working < count) work()
     }.bind(this))
@@ -68,9 +69,7 @@ export function getPagesArray (count, limit) {
   return range(1, pages + 1)
 }
 
-
 export default function Shopify ({shop, accessToken, password, seconds, reqPerSec, limit}) {
-
   shop = cleanShop(shop)
   accessToken = accessToken || password
   seconds = seconds || 1000
@@ -83,24 +82,24 @@ export default function Shopify ({shop, accessToken, password, seconds, reqPerSe
   })
 
   instance.interceptors.request.use(function (config) {
-      config.url = ensureJsonExt(config.url)
-      let qs = querystring.stringify(config.params)
-      qs = (qs) ? '?' + qs : ''
-      debug(`${config.method} to ${config.url}${qs}`)
-      return config
-    }, function (error) {
-      return Promise.reject(error)
-    });
+    config.url = ensureJsonExt(config.url)
+    let qs = querystring.stringify(config.params)
+    qs = (qs) ? '?' + qs : ''
+    debug(`${config.method} to ${config.url}${qs}`)
+    return config
+  }, function (error) {
+    return Promise.reject(error)
+  })
 
   // Add a response interceptor
   instance.interceptors.response.use(function (response) {
-      response.parent = getParentObject(response.config.url)
-      response.child = Object.keys(response.data)[0]
-      return response
-    }, function (error) {
-      if (error.data.errors) throw new Error(error.data.errors)
-      return Promise.reject(error)
-    });
+    response.parent = getParentObject(response.config.url)
+    response.child = Object.keys(response.data)[0]
+    return response
+  }, function (error) {
+    if (error.data.errors) throw new Error(error.data.errors)
+    return Promise.reject(error)
+  })
 
   instance.request = Promise.method(instance.request)
   instance.request = promiseDebounce(instance.request, seconds, reqPerSec)
@@ -120,7 +119,7 @@ export default function Shopify ({shop, accessToken, password, seconds, reqPerSe
   instance.getAll = (url, config) => {
     let parent = getParentObject(url)
     return instance.get(`${parent}/count`, defaultsDeep({
-      url,
+      url
     }, config))
     .then(({count}) => {
       debug(`count for ${parent} is ${count}`)
