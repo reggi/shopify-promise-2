@@ -2,7 +2,7 @@
   "name": "shopify-promise-2",
   "version": "1.0.2",
   "description": "Shopify API wrapper uses promises.",
-  "main": "/lib/index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "build": "babel ./src --out-dir ./lib",
     "test": "nf run -- mocha --compilers js:babel-core/register --recursive"
