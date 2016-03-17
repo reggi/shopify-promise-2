@@ -1,6 +1,6 @@
 {
   "name": "shopify-promise-2",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Shopify API wrapper uses promises.",
   "main": "./lib/index.js",
   "scripts": {
