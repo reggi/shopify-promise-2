@@ -8,7 +8,7 @@ A smooth Shopify API wrapper using `axios` / promises and features rate-limiting
 npm install shopify-promise-2
 ```
 
-# Usage
+## Usage
 
 ```js
 shopify.get('shop').then(({shop}) => {
