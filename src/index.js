@@ -4,7 +4,7 @@ import path from 'path'
 import url from 'url'
 import Promise from 'bluebird'
 import axios from 'axios'
-import { defaultsDeep, difference, range, flatten } from 'lodash'
+import { defaultsDeep, difference, range, flatten, get, isArray } from 'lodash'
 
 let debug = Debug('shopify-promise-2')
 
@@ -97,8 +97,9 @@ export default function Shopify ({shop, accessToken, password, seconds, reqPerSe
     response.child = Object.keys(response.data)[0]
     return response
   }, function (error) {
-    if (error.data.errors) throw new Error(error.data.errors)
-    return Promise.reject(error)
+    let err = new Error('Shopify Error')
+    err.response = error
+    return Promise.reject(err)
   })
 
   instance.request = Promise.method(instance.request)
